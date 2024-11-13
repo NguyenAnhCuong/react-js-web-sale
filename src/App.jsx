@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Login from "./pages/login";
+import Login from "./pages/login/login";
 import Contact from "./pages/contact/contact";
 import BookPage from "./pages/book/BookPage";
 import Header from "./components/header/header";
 import Footer from "./components/footer/footer";
 import HomePage from "./components/Home/HomePage";
+import Register from "./pages/register/register";
 
 const Layout = () => {
   return (
@@ -38,6 +39,10 @@ export default function App() {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
     },
   ]);
   return (
