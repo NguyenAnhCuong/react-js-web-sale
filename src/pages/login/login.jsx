@@ -11,9 +11,12 @@ import "../register/register.scss";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { postLogin } from "../../services/authApi";
+import { useDispatch } from "react-redux";
+import { doLogin } from "../../redux/account/account.slice";
 const Login = () => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
+  const dispatch = useDispatch();
 
   const onFinish = async (values) => {
     const { username, password } = values;
@@ -21,6 +24,8 @@ const Login = () => {
     const res = await postLogin(username, password);
     setIsSubmit(false);
     if (res?.data) {
+      dispatch(doLogin(res.data.user));
+      localStorage.setItem("access_token", res?.data.access_token);
       message.success("Đăng Nhập thành công");
       navigate("/");
     } else {
@@ -46,9 +51,6 @@ const Login = () => {
             </div>
             <Form
               name="basic"
-              // labelCol={{ span: 6 }}
-              // wrapperCol={{ span: 14 }}
-              // style={{ maxWidth: 600, margin: "0 auto" }}
               initialValues={{ remember: true }}
               onFinish={onFinish}
               autoComplete="off"

@@ -15,3 +15,7 @@ export const postLogin = (username, password) => {
     password,
   });
 };
+
+export const fetchAccount = () => {
+  return axios.get("/api/v1/auth/account");
+};

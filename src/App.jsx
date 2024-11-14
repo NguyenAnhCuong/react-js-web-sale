@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Login from "./pages/login/login";
 import Contact from "./pages/contact/contact";
@@ -7,6 +7,13 @@ import Header from "./components/header/header";
 import Footer from "./components/footer/footer";
 import HomePage from "./components/Home/HomePage";
 import Register from "./pages/register/register";
+import { fetchAccount } from "./services/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import { doGetAccount } from "./redux/account/account.slice";
+import LoadingPage from "./components/loading/Loading";
+import NotFound from "./components/loading/NotFound";
+import AdminPage from "./pages/admin/AdminPage";
+import ProtectedRoute from "./components/protect route/ProtectedRoute";
 
 const Layout = () => {
   return (
@@ -18,12 +25,47 @@ const Layout = () => {
   );
 };
 
+const LayoutAdmin = () => {
+  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const user = useSelector((state) => state.account.user);
+  const role = user.role;
+
+  return (
+    <div className="layout-app">
+      {isAdminRoute && role === "ADMIN" && <Header />}
+      <Outlet />
+      {isAdminRoute && role === "ADMIN" && <Footer />}
+    </div>
+  );
+};
+
 export default function App() {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
+
+  const getAccount = async () => {
+    if (
+      window.location.pathname === "/login" ||
+      window.location.pathname === "/" ||
+      window.location.pathname === "/register"
+    )
+      return;
+
+    const res = await fetchAccount();
+    if (res && res.data) {
+      dispatch(doGetAccount(res.data));
+    }
+  };
+
+  useEffect(() => {
+    getAccount();
+  }, []);
+
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
-      errorElement: <div>404. Not Found</div>,
+      errorElement: <NotFound />,
       children: [
         { index: true, element: <HomePage /> },
         {
@@ -44,10 +86,41 @@ export default function App() {
       path: "/register",
       element: <Register />,
     },
+    {
+      path: "/admin",
+      element: <LayoutAdmin />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: (
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "user",
+          element: <Contact />,
+        },
+        {
+          path: "book",
+          element: <BookPage />,
+        },
+      ],
+    },
   ]);
+
   return (
     <>
-      <RouterProvider router={router} />
+      {isAuthenticated === true ||
+      window.location.pathname === "/login" ||
+      window.location.pathname === "/" ||
+      window.location.pathname === "/register" ? (
+        <RouterProvider router={router} />
+      ) : (
+        <LoadingPage />
+      )}
     </>
   );
 }
