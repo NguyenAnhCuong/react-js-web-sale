@@ -14,6 +14,9 @@ import LoadingPage from "./components/loading/Loading";
 import NotFound from "./components/loading/NotFound";
 import AdminPage from "./pages/admin/AdminPage";
 import ProtectedRoute from "./components/protect route/ProtectedRoute";
+import LayoutAdmin from "./components/admin/layoutAdmin";
+import BookPageAdmin from "./pages/admin/BookPageAdmin";
+import UserPageAdmin from "./pages/admin/UserPageAdmin";
 
 const Layout = () => {
   return (
@@ -25,19 +28,19 @@ const Layout = () => {
   );
 };
 
-const LayoutAdmin = () => {
-  const isAdminRoute = window.location.pathname.startsWith("/admin");
-  const user = useSelector((state) => state.account.user);
-  const role = user.role;
+// const LayoutAdmin = () => {
+//   const isAdminRoute = window.location.pathname.startsWith("/admin");
+//   const user = useSelector((state) => state.account.user);
+//   const role = user.role;
 
-  return (
-    <div className="layout-app">
-      {isAdminRoute && role === "ADMIN" && <Header />}
-      <Outlet />
-      {isAdminRoute && role === "ADMIN" && <Footer />}
-    </div>
-  );
-};
+//   return (
+//     <div className="layout-app">
+//       {isAdminRoute && role === "ADMIN" && <Header />}
+//       <Outlet />
+//       {isAdminRoute && role === "ADMIN" && <Footer />}
+//     </div>
+//   );
+// };
 
 export default function App() {
   const dispatch = useDispatch();
@@ -101,11 +104,11 @@ export default function App() {
         },
         {
           path: "user",
-          element: <Contact />,
+          element: <UserPageAdmin />,
         },
         {
           path: "book",
-          element: <BookPage />,
+          element: <BookPageAdmin />,
         },
       ],
     },
