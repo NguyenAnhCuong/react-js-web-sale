@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/protect route/ProtectedRoute";
 import LayoutAdmin from "./components/admin/layoutAdmin";
 import BookPageAdmin from "./pages/admin/BookPageAdmin";
 import UserPageAdmin from "./pages/admin/UserPageAdmin";
+import "./styles/reset.scss";
 
 const Layout = () => {
   return (
@@ -44,12 +45,11 @@ const Layout = () => {
 
 export default function App() {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
+  const isLoading = useSelector((state) => state.account.isLoading);
 
   const getAccount = async () => {
     if (
       window.location.pathname === "/login" ||
-      window.location.pathname === "/" ||
       window.location.pathname === "/register"
     )
       return;
@@ -116,7 +116,7 @@ export default function App() {
 
   return (
     <>
-      {isAuthenticated === true ||
+      {isLoading === false ||
       window.location.pathname === "/login" ||
       window.location.pathname === "/" ||
       window.location.pathname === "/register" ? (

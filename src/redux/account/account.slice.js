@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuthenticated: false,
+  isLoading: true,
   user: {
     email: "",
     phone: "",
@@ -19,11 +20,25 @@ export const accountSlice = createSlice({
   reducers: {
     doLogin: (state, action) => {
       state.isAuthenticated = true;
+      state.isLoading = false;
       state.user = action.payload;
     },
     doGetAccount: (state, action) => {
       state.isAuthenticated = true;
+      state.isLoading = false;
       state.user = action.payload.user;
+    },
+    doLogOutAction: (state, action) => {
+      localStorage.removeItem("access_token");
+      state.isAuthenticated = false;
+      state.user = {
+        email: "",
+        phone: "",
+        fullName: "",
+        role: "",
+        avatar: "",
+        id: "",
+      };
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -31,6 +46,6 @@ export const accountSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
-export const { doLogin, doGetAccount } = accountSlice.actions;
+export const { doLogOutAction, doLogin, doGetAccount } = accountSlice.actions;
 
 export default accountSlice.reducer;
