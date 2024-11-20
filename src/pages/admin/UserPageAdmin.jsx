@@ -1,37 +1,46 @@
-import { Table, Row, Col, Button } from "antd";
+import {
+  Table,
+  Row,
+  Col,
+  Button,
+  Popconfirm,
+  message,
+  notification,
+} from "antd";
 import InputSearch from "./InputSearch";
 import { useEffect, useState } from "react";
-import { fetchListUserPaginate } from "../../services/userApi";
+import { deleteAUser, fetchListUserPaginate } from "../../services/userApi";
 import { IoReload } from "react-icons/io5";
-import { FaUserPlus, FaFileExport } from "react-icons/fa";
+import { FaUserPlus, FaFileExport, FaTrash } from "react-icons/fa";
 import { TfiImport } from "react-icons/tfi";
+import { DeleteTwoTone } from "@ant-design/icons";
+import UserDetail from "./Modal/UserDetail";
 
 const UserPageAdmin = () => {
-  const [listUser, setListUser] = useState([]);
-  const [pageSize, setPageSize] = useState(3);
-  const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    fetchListUser();
-  }, [currentPage, pageSize]);
-
-  const fetchListUser = async () => {
-    const res = await fetchListUserPaginate(currentPage, pageSize);
-    if (res && res.data) {
-      setListUser(res.data.result);
-      setTotal(res.data.meta.total);
-    }
-  };
-
   const columns = [
     {
       title: "Id",
       dataIndex: "_id",
+      render: (text, record, index) => {
+        return (
+          <>
+            <a
+              style={{ textDecoration: "none" }}
+              href="#"
+              onClick={() => {
+                setOpen(true);
+                setDataView(record);
+              }}
+            >
+              {record._id}
+            </a>
+          </>
+        );
+      },
     },
     {
       title: "Tên hiển thị",
-      dataIndex: "FullName",
+      dataIndex: "fullName",
       sorter: true,
     },
     {
@@ -49,13 +58,56 @@ const UserPageAdmin = () => {
       render: (text, record, index) => {
         return (
           <>
-            <button>Edit</button>
-            <button>Delete</button>
+            <Popconfirm
+              placement="leftTop"
+              title={"Xác nhận xóa user"}
+              description={"Bạn có chắc chắn muốn xóa user này ?"}
+              onConfirm={() => handleDeleteUser(record._id)}
+              okText="Xác nhận"
+              cancelText="Hủy"
+            >
+              <span style={{ cursor: "pointer" }}>
+                <FaTrash />
+              </span>
+            </Popconfirm>
           </>
         );
       },
     },
   ];
+
+  const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [dataView, setDataView] = useState({});
+  const [listUser, setListUser] = useState([]);
+  const [pageSize, setPageSize] = useState(3);
+  const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [sort, setSort] = useState("");
+
+  useEffect(() => {
+    fetchListUser();
+  }, [currentPage, pageSize, filter, sort]);
+
+  const fetchListUser = async () => {
+    setIsLoading(true);
+    let query = `current=${currentPage}&pageSize=${pageSize}`;
+    if (filter) {
+      query += `&${filter}`;
+    }
+    if (sort) {
+      query += `&${sort}`;
+    }
+
+    const res = await fetchListUserPaginate(query);
+    if (res && res.data) {
+      setListUser(res.data.result);
+      setTotal(res.data.meta.total);
+    }
+    setIsLoading(false);
+  };
 
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination && pagination.current !== currentPage) {
@@ -65,13 +117,37 @@ const UserPageAdmin = () => {
       setPageSize(pagination.pageSize);
       setCurrentPage(1);
     }
+    if (sorter && sorter.field) {
+      const q =
+        sorter.order === "ascend"
+          ? `sort=${sorter.field}`
+          : `sort=-${sorter.field}`;
+      setSort(q);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const res = await deleteAUser(userId);
+    if (res && res.data) {
+      message.success("Xóa user thành công");
+      fetchListUser();
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message,
+      });
+    }
+  };
+
+  const handleSearch = (query) => {
+    setFilter(query);
   };
 
   return (
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
-          <InputSearch />
+          <InputSearch setFilter={setFilter} handleSearch={handleSearch} />
         </Col>
         <Col span={24}>
           <Table
@@ -84,7 +160,7 @@ const UserPageAdmin = () => {
                     <div style={{ fontSize: "20px", fontWeight: "600" }}>
                       Table User
                     </div>
-                    <div style={{ display: "inline-block" }}>
+                    <div style={{ display: "flex", gap: "15px" }}>
                       <Button
                         type="primary"
                         icon={
@@ -98,7 +174,6 @@ const UserPageAdmin = () => {
                         Export
                       </Button>
                       <Button
-                        style={{ margin: "0 15px" }}
                         type="primary"
                         icon={
                           <TfiImport
@@ -123,7 +198,14 @@ const UserPageAdmin = () => {
                         Thêm mới
                       </Button>
 
-                      <IoReload style={{ margin: "0 30px" }} size={"1.1rem"} />
+                      <IoReload
+                        onClick={() => {
+                          setFilter("");
+                          setSort("");
+                        }}
+                        style={{ cursor: "pointer", margin: "15px 30px" }}
+                        size={"1.1rem"}
+                      />
                     </div>
                   </div>
                 </>
@@ -134,15 +216,24 @@ const UserPageAdmin = () => {
             dataSource={listUser}
             onChange={onChange}
             rowKey={"_id"}
+            isLoading={isLoading}
             pagination={{
               current: currentPage,
               pageSize: pageSize,
               showSizeChanger: true,
               total: total,
+              showTotal: (total, range) => {
+                return (
+                  <div>
+                    {range[0]}-{range[1]} trên {total}
+                  </div>
+                );
+              },
             }}
           />
         </Col>
       </Row>
+      <UserDetail dataViewDetail={dataView} open={open} setOpen={setOpen} />
     </>
   );
 };

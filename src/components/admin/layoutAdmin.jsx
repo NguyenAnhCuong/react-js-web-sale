@@ -10,7 +10,7 @@ import {
   MenuUnfoldOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Space, message } from "antd";
+import { Layout, Menu, Dropdown, Space, message, Avatar } from "antd";
 import { Navigate, Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./layout.scss";
@@ -71,7 +71,7 @@ const LayoutAdmin = () => {
     }
   };
 
-  const itemsDropdown = [
+  let itemsDropdown = [
     {
       label: <label>Quản lý tài khoản</label>,
       key: "account",
@@ -85,6 +85,15 @@ const LayoutAdmin = () => {
       key: "logout",
     },
   ];
+  if (user?.role === "ADMIN") {
+    itemsDropdown.unshift({
+      label: <Link to={"/"}>Trang chủ</Link>,
+      key: "admin",
+    });
+  }
+  const urlAvatar = `${import.meta.env.VITE_BASE_URL}/images/avatar/${
+    user.avatar
+  }`;
 
   return (
     <Layout style={{ minHeight: "100vh" }} className="layout-admin">
@@ -116,7 +125,8 @@ const LayoutAdmin = () => {
           <Dropdown menu={{ items: itemsDropdown }} trigger={["click"]}>
             <a onClick={(e) => e.preventDefault()}>
               <Space>
-                Welcome {user?.fullName}
+                <Avatar shape="square" size="large" src={urlAvatar} />{" "}
+                {user?.fullName}
                 <DownOutlined />
               </Space>
             </a>
