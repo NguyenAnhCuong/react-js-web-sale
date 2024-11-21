@@ -15,6 +15,8 @@ import { FaUserPlus, FaFileExport, FaTrash } from "react-icons/fa";
 import { TfiImport } from "react-icons/tfi";
 import { DeleteTwoTone } from "@ant-design/icons";
 import UserDetail from "./Modal/UserDetail";
+import UserCreate from "./Modal/UserCreate";
+import UserUploadFile from "./Modal/UserUploadFile";
 
 const UserPageAdmin = () => {
   const columns = [
@@ -78,6 +80,7 @@ const UserPageAdmin = () => {
 
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
+  const [openImportModal, setOpenImportModal] = useState(false);
   const [dataView, setDataView] = useState({});
   const [listUser, setListUser] = useState([]);
   const [pageSize, setPageSize] = useState(3);
@@ -181,6 +184,7 @@ const UserPageAdmin = () => {
                             style={{ marginRight: "5px" }}
                           />
                         }
+                        onClick={() => setOpenImportModal(true)}
                         size={"large"}
                       >
                         Import
@@ -193,6 +197,7 @@ const UserPageAdmin = () => {
                             style={{ marginRight: "5px" }}
                           />
                         }
+                        onClick={() => setOpenCreate(true)}
                         size={"large"}
                       >
                         Thêm mới
@@ -234,6 +239,15 @@ const UserPageAdmin = () => {
         </Col>
       </Row>
       <UserDetail dataViewDetail={dataView} open={open} setOpen={setOpen} />
+      <UserCreate
+        fetchListUser={fetchListUser}
+        isModalOpen={openCreate}
+        setIsModalOpen={setOpenCreate}
+      />
+      <UserUploadFile
+        openModal={openImportModal}
+        setOpenModal={setOpenImportModal}
+      />
     </>
   );
 };
