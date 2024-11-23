@@ -245,6 +245,7 @@ const UserPageAdmin = () => {
         setIsModalOpen={setOpenCreate}
       />
       <UserUploadFile
+        fetchListUser={fetchListUser}
         openModal={openImportModal}
         setOpenModal={setOpenImportModal}
       />
