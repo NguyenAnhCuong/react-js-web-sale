@@ -13,10 +13,12 @@ import { deleteAUser, fetchListUserPaginate } from "../../services/userApi";
 import { IoReload } from "react-icons/io5";
 import { FaUserPlus, FaFileExport, FaTrash } from "react-icons/fa";
 import { TfiImport } from "react-icons/tfi";
-import { DeleteTwoTone } from "@ant-design/icons";
+import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import UserDetail from "./Modal/UserDetail";
 import UserCreate from "./Modal/UserCreate";
 import UserUploadFile from "./Modal/UserUploadFile";
+import * as XLSX from "xlsx";
+import UserUpdate from "./Modal/UserUpdate";
 
 const UserPageAdmin = () => {
   const columns = [
@@ -69,9 +71,14 @@ const UserPageAdmin = () => {
               cancelText="Hủy"
             >
               <span style={{ cursor: "pointer" }}>
-                <FaTrash />
+                <FaTrash color="#ff4d4f" />
               </span>
             </Popconfirm>
+
+            <EditTwoTone
+              style={{ cursor: "pointer", marginLeft: "20px" }}
+              onClick={() => handleUpdateUser(record)}
+            />
           </>
         );
       },
@@ -81,6 +88,8 @@ const UserPageAdmin = () => {
   const [open, setOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [openImportModal, setOpenImportModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [dataUpdate, setDataUpdate] = useState({});
   const [dataView, setDataView] = useState({});
   const [listUser, setListUser] = useState([]);
   const [pageSize, setPageSize] = useState(3);
@@ -146,6 +155,20 @@ const UserPageAdmin = () => {
     setFilter(query);
   };
 
+  const handleDownload = () => {
+    if (listUser.length > 0) {
+      const worksheet = XLSX.utils.json_to_sheet(listUser);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "ExportUser.csv");
+    }
+  };
+
+  const handleUpdateUser = (user) => {
+    setOpenUpdateModal(true);
+    setDataUpdate(user);
+  };
+
   return (
     <>
       <Row gutter={[20, 20]}>
@@ -172,6 +195,7 @@ const UserPageAdmin = () => {
                             style={{ marginRight: "5px" }}
                           />
                         }
+                        onClick={() => handleDownload()}
                         size={"large"}
                       >
                         Export
@@ -248,6 +272,13 @@ const UserPageAdmin = () => {
         fetchListUser={fetchListUser}
         openModal={openImportModal}
         setOpenModal={setOpenImportModal}
+      />
+      <UserUpdate
+        fetchListUser={fetchListUser}
+        isModalOpen={openUpdateModal}
+        setIsModalOpen={setOpenUpdateModal}
+        dataUpdate={dataUpdate}
+        setDataUpdate={setDataUpdate}
       />
     </>
   );
