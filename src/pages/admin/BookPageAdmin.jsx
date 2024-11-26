@@ -1,5 +1,11 @@
+import BookTable from "./BookTable";
+
 const BookPageAdmin = () => {
-  return <></>;
+  return (
+    <div>
+      <BookTable />
+    </div>
+  );
 };
 
 export default BookPageAdmin;
