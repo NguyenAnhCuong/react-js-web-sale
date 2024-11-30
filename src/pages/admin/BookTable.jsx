@@ -23,6 +23,7 @@ import { FORMAT_DATE_DISPLAY } from "../../utils/constant";
 import BookModalUpdate from "./Modal/BookModalUpdate";
 import * as XLSX from "xlsx";
 import SearchBook from "./SearchBook";
+import { v4 as uuidv4 } from "uuid";
 
 const BookTable = () => {
   const [listBook, setListBook] = useState([]);
@@ -32,7 +33,7 @@ const BookTable = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("");
+  const [sortQuery, setSortQuery] = useState("sort=-updatedAt");
 
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [openViewDetail, setOpenViewDetail] = useState(false);
@@ -132,7 +133,7 @@ const BookTable = () => {
               okText="Xác nhận"
               cancelText="Hủy"
             >
-              <span style={{ cursor: "pointer", margin: "0 20px" }}>
+              <span style={{ cursor: "pointer", marginRight: "10px" }}>
                 <DeleteTwoTone twoToneColor="#ff4d4f" />
               </span>
             </Popconfirm>
