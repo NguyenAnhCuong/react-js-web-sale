@@ -19,6 +19,7 @@ import BookPageAdmin from "./pages/admin/BookPageAdmin";
 import UserPageAdmin from "./pages/admin/UserPageAdmin";
 import "./styles/reset.scss";
 
+
 const Layout = () => {
   return (
     <div className="layout-app">
@@ -76,7 +77,7 @@ export default function App() {
           element: <Contact />,
         },
         {
-          path: "book",
+          path: "book/:slug",
           element: <BookPage />,
         },
       ],
