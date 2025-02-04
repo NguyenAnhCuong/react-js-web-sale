@@ -48,6 +48,10 @@ export const callUploadBookImg = (fileImg) => {
   });
 };
 
+export const callFetchBookById = (id) =>{
+  return axios.get(`/api/v1/book/${id}`)
+}
+
 export const callUpdateBook = (
   id,
   thumbnail,
