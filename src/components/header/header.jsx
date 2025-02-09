@@ -12,6 +12,7 @@ import { doLogOut } from "../../services/authApi";
 import { doLogOutAction } from "../../redux/account/account.slice";
 import { Link } from "react-router-dom";
 import "../../styles/global.scss";
+import ManageAccount from "../account/ManageAccount";
 
 const Header = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -20,6 +21,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const carts = useSelector((state) => state.order.carts);
+  const [showManageAccount, setShowManageAccount] = useState(false);
 
   const handleLogout = async () => {
     const res = await doLogOut();
@@ -32,8 +34,19 @@ const Header = () => {
 
   let items = [
     {
-      label: <label>Quản lý tài khoản</label>,
+      label: (
+        <label
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowManageAccount(true)}
+        >
+          Quản lý tài khoản
+        </label>
+      ),
       key: "account",
+    },
+    {
+      label: <Link to="/history">Lịch sử mua hàng</Link>,
+      key: "history",
     },
     {
       label: (
@@ -79,7 +92,7 @@ const Header = () => {
           })}
         </div>
         <div className="pop-cart-footer">
-          <button>Xem giỏ hàng</button>
+          <button onClick={() => navigate("/order")}>Xem giỏ hàng</button>
         </div>
       </div>
     );
@@ -99,7 +112,12 @@ const Header = () => {
               ☰
             </div>
             <div className="page-header__logo">
-              <span className="logo">
+              <span
+                className="logo"
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
                 <FaReact className="rotate icon-react" /> Hỏi Dân IT
                 <VscSearchFuzzy className="icon-search" />
               </span>
@@ -160,6 +178,10 @@ const Header = () => {
         <p>Đăng xuất</p>
         <Divider />
       </Drawer>
+      <ManageAccount
+        isModalOpen={showManageAccount}
+        setIsModalOpen={setShowManageAccount}
+      />
     </>
   );
 };

@@ -18,7 +18,9 @@ import LayoutAdmin from "./components/admin/layoutAdmin";
 import BookPageAdmin from "./pages/admin/BookPageAdmin";
 import UserPageAdmin from "./pages/admin/UserPageAdmin";
 import "./styles/reset.scss";
-
+import ViewOrder from "./components/order/ViewOrder";
+import OrderPage from "./pages/order";
+import HistoryPage from "./pages/history/HistoryPage";
 
 const Layout = () => {
   return (
@@ -77,6 +79,14 @@ export default function App() {
           element: <Contact />,
         },
         {
+          path: "order",
+          element: <OrderPage />,
+        },
+        {
+          path: "history",
+          element: <HistoryPage />,
+        },
+        {
           path: "book/:slug",
           element: <BookPage />,
         },
@@ -109,6 +119,10 @@ export default function App() {
         },
         {
           path: "book",
+          element: <BookPageAdmin />,
+        },
+        {
+          path: "order",
           element: <BookPageAdmin />,
         },
       ],
